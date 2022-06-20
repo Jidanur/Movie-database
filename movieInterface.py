@@ -21,10 +21,6 @@ def searchMovie():
     
 
 
-
-
-
-
 db = sqlite3.connect("movieDB.db")  #movie database to access our query
 
 #getting all prod company ordered by total movies produced
