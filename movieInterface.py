@@ -58,6 +58,7 @@ def searchMovie():
         prodCompany.name like '{producedBy.get()}%' and
         prodCountry.name like '{productionCountry.get()}%' and
         Genre.name like '{genre_selected.get()}%'
+        group by movie.id
         """
 
     results_q = db.execute(sql_cmd)
