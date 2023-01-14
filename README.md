@@ -6,9 +6,9 @@
    
    -requirements : 
    
-   ##file: movieDB.db[as directory as python file], 
+   --file: movieDB.db[as directory as python file], 
    
-   ##library: tkinter, sqlite3
+   --library: tkinter, sqlite3
    
    
       python movieInterface.py
