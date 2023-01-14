@@ -4,7 +4,7 @@
 
 #running the code-
    
-      -Requirements : 
+   Requirements : 
    
             file: movieDB.db[as directory as python file] 
    
