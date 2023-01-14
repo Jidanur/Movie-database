@@ -6,7 +6,7 @@
    
    Requirements : 
    
-            file: movieDB.db[as directory as python file] 
+            file: movieDB.db[same directory as python file] 
    
             library: tkinter, sqlite3
    RUN
