@@ -1,3 +1,4 @@
+from codeop import CommandCompiler
 import sqlite3
 from tkinter import *
 import tkinter as tk
@@ -12,7 +13,6 @@ tabulate.PRESERVE_WHITESPACE = True
 def exportCSV(lst):
     contents = ""
     out = open("export.csv","w",encoding="utf-8")
-
     for r in range(len(lst)):
         for c in range(len(lst[r])):
             contents += str(lst[r][c]) + ","
@@ -21,7 +21,7 @@ def exportCSV(lst):
     out.write(contents)
     out.close()
 
-    showinfo("DONE","Succesfully Exported to export.csv")
+    showinfo("DONE","Results succesfully exported to export.csv")
 
 
 
@@ -33,22 +33,11 @@ def resetCombos():
     genre_selected.set('')
 
 def searchMovie():
+    #used for debug purpose
     msg = f"name: {MovieName.get()} \nyear: {select_year.get()} \nproductionCOMP:{producedBy.get()} \ncountry:{productionCountry.get()}"
-
-
-    resultWindow = Tk()
-    resultWindow.title("Search results")
-    resultWindow.geometry("1280x720")
-    
-    #text box to show search results 
-    text_box = Text(resultWindow,font="ariel",height=100,width= 250)
-    scroll_bar = Scrollbar(resultWindow,orient="vertical",command=text_box.yview)
-    scroll_bar.pack(side=RIGHT,expand=True,fill="y")
-    text_box.configure(yscrollcommand=scroll_bar.set)
-    text_box.pack(fill=X,expand= True)
     
 
-    #inserting results to textBox
+    # run the sql command on the database and store it in a list
     sql_cmd = f"""SELECT title, release_date, budget, revenue, prodCompany.name as productionCompany, prodCountry.name as countryOfProduction, Genre.name as Genre from movie 
         join prodCompany on prodCompany.id = movie.id
         join prodCountry on prodCountry.id = movie.id
@@ -63,17 +52,52 @@ def searchMovie():
 
     results_q = db.execute(sql_cmd)
     results_list = list(results_q)
-    col_names = [col[0]  for col in results_q.description]
-    results_list.insert(0,col_names)
+    headings = [col[0]  for col in results_q.description]
+    results_list.insert(0,headings)
+
+    # if no data found for the inteded query then 
+    if len(results_list) < 2:
+        showinfo("Sorry","No data exists for the search results")
+        return
+
+    #intialize result window
+    resultWindow = Tk()
+    resultWindow.title("Search results")
+    resultWindow.geometry("1280x720")
     
-    text_box.insert(END,"\n\n")
-    text_box.insert(END,tabulate(results_list,tablefmt="pretty",headers='firstrow'))
 
+    frame_box = ttk.Frame(resultWindow)
 
-    export_button = Button(resultWindow,text="Export current table as CSV",width=20,bg="green")
-    export_button.pack(side=LEFT,fill="y")
-
+    #grid config for the window
+    frame_box.grid_columnconfigure(0,weight=1)
+    frame_box.grid_rowconfigure(0,weight=1)
     
+    # inserting results to textBox
+    text_box = Text(frame_box)
+    text_box.grid(row=0, column=0, sticky=tk.EW)
+    
+    
+    #putting the results in text box grid view
+    for i in range(len(results_list)):
+        for j in range(len(results_list[i])):
+            gridBox = Entry(text_box, width=20, fg='black', font=('Arial',14,'bold'))
+            gridBox.grid(row=i,column=j)
+            gridBox.insert(END, results_list[i][j])
+    
+
+    #TODO scrollbar not working properly fix needed
+    yScrollbar = ttk.Scrollbar(resultWindow)
+    text_box['yscrollcommand']= yScrollbar.set
+    yScrollbar.config(command=text_box.yview)
+    frame_box.grid()
+    yScrollbar.pack(side='right', fill='y')
+            
+    # export_button = Button(resultWindow,text="Export current table as CSV",width=20,bg="green")
+    # export_button.pack(side=LEFT,fill="y")
+    
+    
+
+
     resultWindow.mainloop()
 
 
@@ -94,7 +118,7 @@ contries_list = db.execute("SELECT cd,name from prodCountry GROUP by cd ORDER by
 genre_list = db.execute("SELECT gid,name from Genre GROUP by gid ORDER by count(id) DESC")
 
 #production years
-year_list = [x for x in range(1900,2020)]
+year_list = [x for x in range(1900,2019)]
 
 
 #MAIN UI
