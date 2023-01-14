@@ -3,7 +3,8 @@
    [source](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset)
 
 #running the code-
-   \n -requirements : file- movieDB.db[as directory as python file], library: tkinter, sqlite3
+   
+   -requirements : file- movieDB.db[as directory as python file], library: tkinter, sqlite3
    
       python movieInterface.py
 
