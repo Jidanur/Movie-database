@@ -67,37 +67,54 @@ def searchMovie():
     
 
     frame_box = ttk.Frame(resultWindow)
+    frame_box.grid(row=0, column=0, sticky='nsew')
 
-    #grid config for the window
+    #grid config for the frame
     frame_box.grid_columnconfigure(0,weight=1)
     frame_box.grid_rowconfigure(0,weight=1)
     
-    # inserting results to textBox
-    text_box = Text(frame_box)
-    text_box.grid(row=0, column=0, sticky=tk.EW)
-    
-    
-    #putting the results in text box grid view
-    for i in range(len(results_list)):
-        for j in range(len(results_list[i])):
-            gridBox = Entry(text_box, width=20, fg='black', font=('Arial',14,'bold'))
-            gridBox.grid(row=i,column=j)
-            gridBox.insert(END, results_list[i][j])
-    
 
-    #TODO scrollbar not working properly fix needed
-    yScrollbar = ttk.Scrollbar(resultWindow)
-    text_box['yscrollcommand']= yScrollbar.set
-    yScrollbar.config(command=text_box.yview)
-    frame_box.grid()
-    yScrollbar.pack(side='right', fill='y')
-            
-    # export_button = Button(resultWindow,text="Export current table as CSV",width=20,bg="green")
-    # export_button.pack(side=LEFT,fill="y")
-    
-    
+    #tree view for the result data
+    #adjusting tree to frame_box
+    tree = ttk.Treeview(frame_box)
+    tree.grid(row=0, column=0, sticky='nsew')
 
 
+    # creating headings 
+    tree['columns'] = [str(x) for x in range(len(results_list[0]))]
+    tree.column("#0", width=70, minwidth=70, stretch=tk.NO)
+
+    for i in range(len(results_list[0])):
+        tree.column(str(i), width=150, minwidth=150, stretch=tk.NO)
+        tree.heading(str(i), text=results_list[0][i], anchor=tk.W)
+    
+    for i in tree.get_children():
+        tree.delete(i)
+
+    for row in results_list[1:]:
+        tree.insert("","end",values=row)
+
+
+    yScrollbar = ttk.Scrollbar(frame_box,orient='vertical')
+    yScrollbar.grid(row=0,column=1,sticky='ns')
+    tree['yscrollcommand']= yScrollbar.set
+    yScrollbar.config(command=tree.yview)
+
+
+    resultWindow.columnconfigure(0, weight=1)
+    resultWindow.rowconfigure(0, weight=1)
+
+
+    # Create a menu bar
+    menu_bar = tk.Menu(resultWindow)
+    resultWindow.config(menu=menu_bar)
+
+    # Create options menu
+    options_menu = tk.Menu(menu_bar)
+    menu_bar.add_cascade(label="Options", menu=options_menu)
+    options_menu.add_command(label="Export as CSV", command=exportCSV)
+    
+    
     resultWindow.mainloop()
 
 
