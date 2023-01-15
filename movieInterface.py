@@ -10,12 +10,12 @@ tabulate.PRESERVE_WHITESPACE = True
 
 
 #function for exporting results in CSV file
-def exportCSV(lst):
+def exportCSV():
     contents = ""
     out = open("export.csv","w",encoding="utf-8")
-    for r in range(len(lst)):
-        for c in range(len(lst[r])):
-            contents += str(lst[r][c]) + ","
+    for r in range(len(export_list)):
+        for c in range(len(export_list[r])):
+            contents += str(export_list[r][c]) + ","
         contents +="\n"
         
     out.write(contents)
@@ -60,10 +60,24 @@ def searchMovie():
         showinfo("Sorry","No data exists for the search results")
         return
 
+
+    #set current list to export
+    global export_list 
+    export_list = results_list
+
     #intialize result window
     resultWindow = Tk()
     resultWindow.title("Search results")
     resultWindow.geometry("1280x720")
+
+     # Create a menu bar
+    menu_bar = tk.Menu(resultWindow)
+    resultWindow.config(menu=menu_bar)
+
+    # Create options menu
+    options_menu = tk.Menu(menu_bar)
+    menu_bar.add_cascade(label="Options", menu=options_menu)
+    options_menu.add_command(label="Export as CSV", command=exportCSV)
     
 
     frame_box = ttk.Frame(resultWindow)
@@ -103,16 +117,6 @@ def searchMovie():
 
     resultWindow.columnconfigure(0, weight=1)
     resultWindow.rowconfigure(0, weight=1)
-
-
-    # Create a menu bar
-    menu_bar = tk.Menu(resultWindow)
-    resultWindow.config(menu=menu_bar)
-
-    # Create options menu
-    options_menu = tk.Menu(menu_bar)
-    menu_bar.add_cascade(label="Options", menu=options_menu)
-    options_menu.add_command(label="Export as CSV", command=exportCSV)
     
     
     resultWindow.mainloop()
@@ -136,6 +140,9 @@ genre_list = db.execute("SELECT gid,name from Genre GROUP by gid ORDER by count(
 
 #production years
 year_list = [x for x in range(1900,2019)]
+
+#global variable used for exporting the resulted list
+export_list = []
 
 
 #MAIN UI
@@ -229,7 +236,6 @@ search_button.focus()
 clear_button = tk.Button(searchFrame,  text="Clear" ,command=resetCombos,fg="Red",font="bold")
 clear_button.grid(column= 3,row=3,sticky=tk.E,columnspan=1)
 clear_button.focus()
-
 
 
 root.mainloop()
