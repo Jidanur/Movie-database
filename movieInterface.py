@@ -1,12 +1,9 @@
-from codeop import CommandCompiler
 import sqlite3
 from tkinter import *
 import tkinter as tk
 from tkinter import Tk, ttk
 from tkinter.messagebox import showinfo
-from tabulate import tabulate
 
-tabulate.PRESERVE_WHITESPACE = True
 
 
 #function for exporting results in CSV file
@@ -105,16 +102,18 @@ def searchMovie():
     for i in tree.get_children():
         tree.delete(i)
 
+    #inserting the rows in tree
     for row in results_list[1:]:
         tree.insert("","end",values=row)
 
 
+    #adding scrollbar
     yScrollbar = ttk.Scrollbar(frame_box,orient='vertical')
     yScrollbar.grid(row=0,column=1,sticky='ns')
     tree['yscrollcommand']= yScrollbar.set
     yScrollbar.config(command=tree.yview)
 
-
+    #adjusts window with the frame
     resultWindow.columnconfigure(0, weight=1)
     resultWindow.rowconfigure(0, weight=1)
     
